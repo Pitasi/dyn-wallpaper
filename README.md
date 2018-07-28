@@ -1,5 +1,9 @@
 # Emulate Mac OS Mojave's dynamic wallpaper
 
+## What you get
+![Dyn Wallpaper](http://i.freegifmaker.me/1/5/3/2/8/0/15328097891754468.gif?1532809797)
+
+## Why
 Yeah, since the first time I looked at Mojave's dynamic wallpaper I fell in
 love with them.
 
