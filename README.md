@@ -1,4 +1,4 @@
-# Emulate Mac OS Mojave's dynamic wallpaper
+# Emulate macOS Mojave's dynamic wallpaper
 
 ## What you get
 ![Dyn Wallpaper](http://i.freegifmaker.me/1/5/3/2/8/0/15328097891754468.gif?1532809797)
