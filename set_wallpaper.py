@@ -11,6 +11,8 @@ import os
 import re
 import argparse
 import math
+import tempfile
+import ctypes
 from time import sleep
 from subprocess import call
 from datetime import datetime
@@ -18,13 +20,19 @@ from dateutil.tz import tzlocal
 from PIL import Image
 from astral import Astral
 
+def is_windows():
+    """
+        Checks if the currently running operating system is Windows.
+    """
+    return os.name == 'nt'
+
 
 def init_images(folder, set_cmd=False):
     """
         Open all images in the path in the correct order.
 
-        If `set_cmd` is not None, it is used as command for setting the initial
-        wallpaper while waiting for the other images to load.
+        If `set_cmd` is given, it is used as the command for setting the
+        initial wallpaper while waiting for the other images to load.
     """
     image_paths = [
         f for f in os.listdir(folder)
@@ -33,8 +41,8 @@ def init_images(folder, set_cmd=False):
     # sort images list numerically, not lexicographically, to avoid missing
     # padding 0s problem
     image_paths.sort(key=lambda f: int(re.sub(r'[^0-9]*', "", f)))
-    if set_cmd:
-        full_path = os.path.join( folder, image_paths[int(len(image_paths)/2)])
+    if set_cmd or is_windows():
+        full_path = os.path.join(folder, image_paths[int(len(image_paths)/2)])
         update_wallpaper(set_cmd, full_path)
 
     image_files = [
@@ -71,8 +79,18 @@ def blend_images(img1, img2, amount, tmp_path):
 def update_wallpaper(cmd, wallpaper_path):
     """
         Use `feh` or a custom command to set the image wallpaper.
+        
+        Windows does not use a custom command by default, but if one is given then it is used.
     """
-    call(cmd.format(wallpaper_path).split())
+    if cmd is None and is_windows():
+        SPI_SETDESKWALLPAPER = 20
+        # This only works with an absolute path
+        abs_wallpaper_path = os.path.abspath(wallpaper_path)
+        ctypes.windll.user32.SystemParametersInfoW(
+            SPI_SETDESKWALLPAPER, 0, abs_wallpaper_path, 0
+        )
+    else:
+        call(cmd.format(wallpaper_path).split())
 
 
 def get_current_images(dawn_time, day_length, images, dusk_id):
@@ -121,7 +139,18 @@ def main(args):
         sleep(60 * args.rate)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
+    # Uses the OS temp path by default
+    default_temp_path = os.path.join(tempfile.gettempdir(), 'wallpaper.png')
+
+    # Windows does not use commands to set the wallpaper by default, so the
+    # argument is hidden. A Windows user can still use a command to set the
+    # wallpaper if they wish to do so.
+    default_command = None if is_windows() else 'feh --bg-scale {}'
+    command_argument_help = argparse.SUPPRESS if is_windows() else 'Command to \
+                be executed for setting the wallpaper, use "{}" as a \
+                placeholder for the image (default: "feh --bg-scale {}").'
+
     PARSER = argparse.ArgumentParser(
         description='Live wallpaper based on Sun position, emulating Mac OS \
                      Mojave "dynamic wallpaper".',
@@ -147,8 +176,8 @@ if __name__ == '__main__':
     PARSER.add_argument(
         '-t',
         '--temp',
-        help='Temp image file (default /tmp/wallpaper.png).',
-        default='/tmp/wallpaper.png',
+        help='Temp image file (default {path}).'.format(path=default_temp_path),
+        default=default_temp_path,
     )
     PARSER.add_argument(
         '-i',
@@ -161,9 +190,8 @@ if __name__ == '__main__':
     PARSER.add_argument(
         '-c',
         '--command',
-        help='Command to be executed for setting the wallpaper, use "{}" as a \
-              placeholder for the image (default: "feh --bg-scale {}").',
-        default='feh --bg-scale {}',
+        help=command_argument_help,
+        default=default_command,
     )
     ARGS = PARSER.parse_args()
     main(ARGS)
