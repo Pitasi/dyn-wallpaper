@@ -106,13 +106,12 @@ def main(args):
     path = os.path.expanduser(args.folder)
     image_paths, images = init_images(path, set_cmd=args.command)
 
-    dawn_time, dusk_time, day_length = init_astral(args.city)
-
-    print('Process started!')
-    print('Dawn:', str(dawn_time))
-    print('Dusk:', str(dusk_time))
-    print('Day length (seconds):', str(day_length))
     while True:
+        dawn_time, dusk_time, day_length = init_astral(args.city)
+        print('Dawn:', str(dawn_time))
+        print('Dusk:', str(dusk_time))
+        print('Day length (seconds):', str(day_length))
+
         blend_images(
             *get_current_images(dawn_time, day_length, images, args.dusk_id),
             args.temp
