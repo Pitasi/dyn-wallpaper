@@ -10,7 +10,9 @@ love with them.
 That's why I've done a pretty simple script to use their images on a Linux
 environment. As I'm using i3wm with `feh`, the default command used to set the
 wallpaper, but you may change it in order to work with Gnome, KDE, or whatever
-you wish (probably even on Windows, but I don't have time to investigate).
+you wish.
+
+This script also supports Windows.
 
 # Requirements
 Python 3, and some Python packages you can find in
