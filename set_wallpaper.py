@@ -15,7 +15,7 @@ import tempfile
 import ctypes
 from time import sleep
 from subprocess import call
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
 from PIL import Image
 from astral import Astral
@@ -70,17 +70,19 @@ def init_astral(city):
 def blend_images(img1, img2, amount, tmp_path):
     """
         Take two images path, an amount (0-1, 0 means only img1 is shown, 1
-        means only img2 is shown), then store the blended image in /tmp.
+        means only img2 is shown), then store the blended image in the OS
+        temp directory (e.g. /tmp).
     """
-    new_img = Image.blend(img1, img2, amount)
-    new_img.save(tmp_path, 'PNG', compress_level=1)
+    new_img = Image.blend(img1, img2, amount).convert('RGB')
+    new_img.save(tmp_path, 'JPEG', compress_level=1)
 
 
 def update_wallpaper(cmd, wallpaper_path):
     """
         Use `feh` or a custom command to set the image wallpaper.
-        
-        Windows does not use a custom command by default, but if one is given then it is used.
+
+        Windows does not use a custom command by default, but if one is given
+        then it is used.
     """
     if cmd is None and is_windows():
         SPI_SETDESKWALLPAPER = 20
@@ -124,8 +126,16 @@ def main(args):
     path = os.path.expanduser(args.folder)
     image_paths, images = init_images(path, set_cmd=args.command)
 
+    if args.demo:
+        dawn_time = datetime.now(tzlocal())
+        day_length = 2 * 60 # 2 minutes
+        dusk_time = dawn_time + timedelta(seconds=day_length)
+
     while True:
-        dawn_time, dusk_time, day_length = init_astral(args.city)
+        if not args.demo:
+            # Compute real dawn/dusk times
+            dawn_time, dusk_time, day_length = init_astral(args.city)
+
         print('Dawn:', str(dawn_time))
         print('Dusk:', str(dusk_time))
         print('Day length (seconds):', str(day_length))
@@ -135,25 +145,27 @@ def main(args):
             args.temp
         )
         update_wallpaper(args.command, args.temp)
-        sleep(60 * args.rate)
+
+        if not args.demo:
+            sleep(60 * args.rate)
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     # Uses the OS temp path by default
-    default_temp_path = os.path.join(tempfile.gettempdir(), 'wallpaper.png')
+    default_temp_path = os.path.join(tempfile.gettempdir(), 'wallpaper.jpg')
 
     # Windows does not use commands to set the wallpaper by default, so the
     # argument is hidden. A Windows user can still use a command to set the
     # wallpaper if they wish to do so.
     default_command = None if is_windows() else 'feh --bg-scale {}'
     command_argument_help = argparse.SUPPRESS if is_windows() else 'Command to \
-                be executed for setting the wallpaper, use "{}" as a \
-                placeholder for the image (default: "feh --bg-scale {}").'
+        be executed for setting the wallpaper, use "{}" as a placeholder for \
+        the image (default: "feh --bg-scale {}").'
 
     PARSER = argparse.ArgumentParser(
         description='Live wallpaper based on Sun position, emulating Mac OS \
                      Mojave "dynamic wallpaper".',
-        epilog='Source code: https://github.com/Pitasi/live-wallpaper',
+        epilog='Source code: https://github.com/Pitasi/dyn-wallpaper',
     )
     PARSER.add_argument(
         'city',
@@ -191,6 +203,12 @@ if __name__ == '__main__':
         '--command',
         help=command_argument_help,
         default=default_command,
+    )
+    PARSER.add_argument(
+        '-d',
+        '--demo',
+        help='Run a fast demo of the script, useful to test it.',
+        action='store_true',
     )
     ARGS = PARSER.parse_args()
     main(ARGS)
