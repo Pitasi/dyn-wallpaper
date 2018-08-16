@@ -73,7 +73,7 @@ optional arguments:
 If you use a different Desktop Environment and want to add the command to this
 list just fill an issue or send a PR!
 
-## Default (feh)
+## Default (feh and Windows)
 ```sh
 $ python set_wallpaper.py Rome ~/Images/Wallpapers
 ```
