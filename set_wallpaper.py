@@ -107,7 +107,7 @@ def get_current_images(dawn_time, day_length, images, dusk_id):
     """
     now = datetime.now(tzlocal())
     cursor = (now - dawn_time).total_seconds()
-    image_id = dusk_id * cursor / day_length
+    image_id = 1 + dusk_id * cursor / day_length
     if image_id < 1 or image_id > len(images) - 1:
         # out of range, just pick last image
         last_image = images[len(images) - 1]
