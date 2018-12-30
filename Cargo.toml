@@ -1,0 +1,21 @@
+[package]
+name = "dyn-wallpaper"
+version = "0.1.0"
+edition = "2018"
+authors = ["Antonio Pitasi <pitasi.antonio@gmail.com>"]
+
+[profile.dev]
+opt-level = 2
+debug-assertions = true
+
+[dependencies]
+strfmt = "0.1.6"
+chrono = "0.4.6"
+clap = "2.26.0"
+indicatif = "0.9.0"
+sun-times = "0.1.2"
+csv = "1"
+image = "0.20.1"
+alphanumeric-sort = "1.0.6"
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
