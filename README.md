@@ -30,9 +30,17 @@ Extract the images in a folder, i.e. `~/Images/Wallpapers`.
 From the [release page](https://github.com/Pitasi/dyn-wallpaper/releases)
 download the latest binary for your platform (Linux, Mac OS, or Windows).
 
+You can specify which command should be executed to change your wallpaper. By default, dyn-wallpaper uses [feh](https://wiki.archlinux.org/index.php/feh), for Gnome that's not ideal and I'm providing an example below.
+
 Run it from a terminal (or command prompt if you prefer):
 ```sh
+# using feh
 $ ./dyn-wallpaper "Rome" "~/Images/Wallpapers"
+
+# using Gnome
+$ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "gsettings set org.gnome.desktop.background picture-uri {path}"
+
+# please submit PRs with other DE if you can make them work!
 ```
 
 You can find a list of valid city names [here](https://astral.readthedocs.io/en/latest/#cities).
