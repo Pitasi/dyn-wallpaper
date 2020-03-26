@@ -40,6 +40,9 @@ $ ./dyn-wallpaper "Rome" "~/Images/Wallpapers"
 # using Gnome
 $ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "gsettings set org.gnome.desktop.background picture-uri {path}"
 
+# using contractor from Elementary OS 5.1.2 "Hera"
+$ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "/usr/lib/x86_64-linux-gnu/io.elementary.contract.set-wallpaper {path}"
+
 # please submit PRs with other DE if you can make them work!
 ```
 
