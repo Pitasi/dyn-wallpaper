@@ -43,6 +43,9 @@ $ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "gsettings set org.gnome.desktop.
 # using contractor from Elementary OS 5.1.2 "Hera"
 $ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "/usr/lib/x86_64-linux-gnu/io.elementary.contract.set-wallpaper {path}"
 
+# using swaybg for swaywm
+$ ./dyn-wallpaper "Rome" "~/Images/Wallpapers" "swaybg -o '*' -i {path} -m fill"
+
 # please submit PRs with other DE if you can make them work!
 ```
 
